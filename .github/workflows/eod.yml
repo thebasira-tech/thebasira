@@ -1,0 +1,17 @@
+name: Basira EOD Cron
+
+on:
+  schedule:
+    - cron: "0 3 * * 1-5"
+  workflow_dispatch: {}
+
+jobs:
+  run-eod:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call Basira EOD endpoint
+        run: |
+          curl -sS -H "x-cron-secret: $CRON_SECRET" "$CRON_EOD_URL"
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+          CRON_EOD_URL: ${{ secrets.CRON_EOD_URL }}

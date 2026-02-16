@@ -1,0 +1,6 @@
+{
+  "crons": [
+    { "path": "/api/cron/eod", "schedule": "10 18 * * 1-5" },
+    { "path": "/api/cron/interday?from=2016-01-01", "schedule": "30 19 * * 1-5" }
+  ]
+}

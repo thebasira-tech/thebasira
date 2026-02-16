@@ -1,0 +1,98 @@
+generator client {
+  provider   = "prisma-client-js"
+  engineType = "binary"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum AssetType {
+  EQUITY
+  ETF
+  DEBT
+}
+
+model Security {
+  id        Int      @id @default(autoincrement())
+  symbol    String   @unique
+  name      String
+  assetType AssetType
+  sector    String?
+  csiStatus String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  dailyPrices DailyPrice[]
+  ohlcvBars   OhlcvBar[]
+}
+
+model DailyPrice {
+  id        Int      @id @default(autoincrement())
+  symbol    String
+  date      DateTime
+  open      Float?
+  high      Float?
+  low       Float?
+  close     Float?
+  volume    Float?
+  value     Float?
+  marketCap Float?
+  high52w   Float?
+  low52w    Float?
+  createdAt DateTime @default(now())
+
+  security  Security @relation(fields: [symbol], references: [symbol], onDelete: Cascade)
+
+  @@unique([symbol, date])
+  @@index([date])
+}
+
+model OhlcvBar {
+  id        Int      @id @default(autoincrement())
+  symbol    String
+  date      DateTime
+  open      Float
+  high      Float
+  low       Float
+  close     Float
+  volume    Float?
+  createdAt DateTime @default(now())
+
+  security  Security @relation(fields: [symbol], references: [symbol], onDelete: Cascade)
+
+  @@unique([symbol, date])
+  @@index([symbol, date])
+  @@index([date])
+}
+
+model IndexValue {
+  id        Int      @id @default(autoincrement())
+  symbol    String
+  name      String
+  date      DateTime
+  value     Float
+  changePct Float?
+  createdAt DateTime @default(now())
+
+  @@unique([symbol, date])
+  @@index([date])
+}
+model IngestionRun {
+  id        String   @id @default(cuid())
+  job       String
+  status    String   // "STARTED" | "SUCCESS" | "FAILED"
+  startedAt DateTime @default(now())
+  endedAt   DateTime?
+  meta      Json?
+
+  @@index([job, startedAt])
+}
+
+model RecentlyViewedSymbol {
+  symbol    String   @id
+  views7d   Int      @default(0)
+  updatedAt DateTime @updatedAt
+}
+
