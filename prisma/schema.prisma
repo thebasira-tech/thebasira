@@ -15,17 +15,19 @@ enum AssetType {
 }
 
 model Security {
-  id        Int      @id @default(autoincrement())
-  symbol    String   @unique
+  id        Int       @id @default(autoincrement())
+  symbol    String    @unique
   name      String
   assetType AssetType
   sector    String?
   csiStatus String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 
-  dailyPrices DailyPrice[]
-  ohlcvBars   OhlcvBar[]
+  dailyPrices  DailyPrice[]
+  ohlcvBars    OhlcvBar[]
+  newsMentions NewsMention[] @relation("SecurityNewsMentions")
+  aliases SecurityAlias[]
 }
 
 model DailyPrice {
@@ -43,7 +45,7 @@ model DailyPrice {
   low52w    Float?
   createdAt DateTime @default(now())
 
-  security  Security @relation(fields: [symbol], references: [symbol], onDelete: Cascade)
+  security Security @relation(fields: [symbol], references: [symbol], onDelete: Cascade)
 
   @@unique([symbol, date])
   @@index([date])
@@ -60,7 +62,7 @@ model OhlcvBar {
   volume    Float?
   createdAt DateTime @default(now())
 
-  security  Security @relation(fields: [symbol], references: [symbol], onDelete: Cascade)
+  security Security @relation(fields: [symbol], references: [symbol], onDelete: Cascade)
 
   @@unique([symbol, date])
   @@index([symbol, date])
@@ -79,11 +81,12 @@ model IndexValue {
   @@unique([symbol, date])
   @@index([date])
 }
+
 model IngestionRun {
-  id        String   @id @default(cuid())
+  id        String    @id @default(cuid())
   job       String
-  status    String   // "STARTED" | "SUCCESS" | "FAILED"
-  startedAt DateTime @default(now())
+  status    String // "STARTED" | "SUCCESS" | "FAILED"
+  startedAt DateTime  @default(now())
   endedAt   DateTime?
   meta      Json?
 
@@ -95,4 +98,58 @@ model RecentlyViewedSymbol {
   views7d   Int      @default(0)
   updatedAt DateTime @updatedAt
 }
+
+model NewsSource {
+  id        String   @id @default(cuid())
+  name      String
+  homepage  String?
+  feedUrl   String   @unique
+  country   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  articles NewsArticle[]
+}
+
+model NewsArticle {
+  id       String     @id @default(cuid())
+  sourceId String
+  source   NewsSource @relation(fields: [sourceId], references: [id])
+
+  title       String
+  url         String    @unique
+  publishedAt DateTime?
+  summary     String?
+  imageUrl    String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  mentions NewsMention[]
+}
+
+model NewsMention {
+  id        String      @id @default(cuid())
+  articleId String
+  article   NewsArticle @relation(fields: [articleId], references: [id])
+
+  symbol   String
+  security Security @relation("SecurityNewsMentions", fields: [symbol], references: [symbol])
+
+  createdAt DateTime @default(now())
+
+  @@unique([articleId, symbol])
+  @@index([symbol, createdAt])
+}
+
+model SecurityAlias {
+  id     String @id @default(cuid())
+  symbol String
+  alias  String
+
+  security Security @relation(fields: [symbol], references: [symbol])
+
+  @@unique([symbol, alias], name: "symbol_alias")
+}
+
 

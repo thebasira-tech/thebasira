@@ -1,3 +1,5 @@
+// src/lib/format.ts
 export function formatNaira(value: number) {
-  return `₦${value.toLocaleString("en-NG")}`;
+  const n = Number(value ?? 0);
+  return `₦${n.toLocaleString("en-NG", { maximumFractionDigits: 2 })}`;
 }

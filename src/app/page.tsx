@@ -5,34 +5,42 @@ import { formatNaira } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
 
+function pctChange(newVal?: number | null, oldVal?: number | null) {
+  if (!newVal || !oldVal || oldVal === 0) return null;
+  return ((newVal - oldVal) / oldVal) * 100;
+}
+
 export default async function HomePage() {
   const securities = await prisma.security.findMany({
     orderBy: { symbol: "asc" },
     include: {
       dailyPrices: {
         orderBy: { date: "desc" },
-        take: 1,
+        take: 8, // ✅ enough to compute 1D + 7D
       },
     },
   });
 
   const stocks = securities.map((s) => {
     const latest = s.dailyPrices[0];
+    const prev = s.dailyPrices[1];
+    const weekAgo = s.dailyPrices[7];
+
     const price = latest?.close ?? 0;
-    const prevClose = null; // optional later (compute from 2nd latest)
-    const changePct = null; // optional later
 
     return {
       symbol: s.symbol,
       name: s.name,
       sector: s.sector ?? "—",
+
       price,
       volume: latest?.volume ?? 0,
       marketCap: latest?.marketCap ?? 0,
-      // keep your UI expecting these:
-      change1h: null,
-      change1d: changePct,
-      change7d: null,
+
+      // your StocksTable expects these keys:
+      change_1h: null, // we’ll keep null for now
+      change_1d: pctChange(latest?.close, prev?.close),
+      change_7d: pctChange(latest?.close, weekAgo?.close),
     };
   });
 

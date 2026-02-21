@@ -1,8 +1,9 @@
+// src/components/StocksTable.tsx
 "use client";
 
 import React from "react";
 import Link from "next/link";
-import { formatNaira } from "@/lib/data"; // keep for now (or switch later if you moved it)
+import { formatNaira } from "@/lib/format";
 import StockIcon from "@/components/StockIcon";
 
 type SortKey = "marketCap" | "price" | "volume" | "change_1h" | "change_1d" | "change_7d";
@@ -33,7 +34,6 @@ function SortIndicator({ active, dir }: { active: boolean; dir: SortDir }) {
 }
 
 function numOrNegInf(v: unknown) {
-  // Sorting helper: null/undefined/NaN should sink to bottom on desc
   if (v === null || v === undefined) return Number.NEGATIVE_INFINITY;
   const n = Number(v);
   return Number.isFinite(n) ? n : Number.NEGATIVE_INFINITY;
@@ -54,11 +54,9 @@ export default function StocksTable({ initialStocks }: { initialStocks: StockRow
   const [query, setQuery] = React.useState("");
   const [sector, setSector] = React.useState("All");
 
-  // Sorting
   const [sortKey, setSortKey] = React.useState<SortKey>("marketCap");
   const [sortDir, setSortDir] = React.useState<SortDir>("desc");
 
-  // Mobile timeframe toggle (collapses 1H/1D/7D into one column)
   const [mobileTf, setMobileTf] = React.useState<Timeframe>("1d");
 
   const sectors = React.useMemo(() => {
@@ -94,7 +92,7 @@ export default function StocksTable({ initialStocks }: { initialStocks: StockRow
       setSortDir((d) => (d === "asc" ? "desc" : "asc"));
     } else {
       setSortKey(key);
-      setSortDir("desc"); // default like CMC
+      setSortDir("desc");
     }
   };
 
@@ -103,7 +101,6 @@ export default function StocksTable({ initialStocks }: { initialStocks: StockRow
 
   return (
     <>
-      {/* Search + Sector */}
       <div className="mb-4 flex flex-col sm:flex-row gap-3">
         <input
           type="text"
@@ -125,7 +122,6 @@ export default function StocksTable({ initialStocks }: { initialStocks: StockRow
         </select>
       </div>
 
-      {/* Mobile timeframe toggle */}
       <div className="mb-3 flex items-center justify-between sm:hidden">
         <div className="text-xs text-gray-500">Change timeframe</div>
         <div className="inline-flex rounded-lg border overflow-hidden">
@@ -159,7 +155,6 @@ export default function StocksTable({ initialStocks }: { initialStocks: StockRow
                 Price <SortIndicator active={sortKey === "price"} dir={sortDir} />
               </th>
 
-              {/* Desktop: 1H/1D/7D */}
               <th
                 className="hidden sm:table-cell px-4 py-3 text-right cursor-pointer select-none"
                 onClick={() => toggleSort("change_1h")}
@@ -184,7 +179,6 @@ export default function StocksTable({ initialStocks }: { initialStocks: StockRow
                 7D % <SortIndicator active={sortKey === "change_7d"} dir={sortDir} />
               </th>
 
-              {/* Mobile: single Change column */}
               <th
                 className="sm:hidden px-4 py-3 text-right cursor-pointer select-none"
                 onClick={() => toggleSort(mobileChangeKey)}
@@ -222,11 +216,7 @@ export default function StocksTable({ initialStocks }: { initialStocks: StockRow
               const mobileVal = (stock as any)[mobileChangeKey] as number | null | undefined;
 
               const classFor = (v: number | null | undefined) =>
-                v === null || v === undefined
-                  ? "text-gray-400"
-                  : v >= 0
-                  ? "text-green-600"
-                  : "text-red-600";
+                v === null || v === undefined ? "text-gray-400" : v >= 0 ? "text-green-600" : "text-red-600";
 
               return (
                 <tr key={stock.symbol} className="border-t hover:bg-gray-50">
@@ -248,7 +238,6 @@ export default function StocksTable({ initialStocks }: { initialStocks: StockRow
 
                   <td className="px-4 py-3 text-right">{formatNaira(stock.price || 0)}</td>
 
-                  {/* Desktop % columns */}
                   <td className={`hidden sm:table-cell px-4 py-3 text-right font-medium ${classFor(c1h)}`}>
                     {renderPct(c1h)}
                   </td>
@@ -261,7 +250,6 @@ export default function StocksTable({ initialStocks }: { initialStocks: StockRow
                     {renderPct(c7d)}
                   </td>
 
-                  {/* Mobile single Change column */}
                   <td className={`sm:hidden px-4 py-3 text-right font-medium ${classFor(mobileVal)}`}>
                     {renderPct(mobileVal)}
                   </td>

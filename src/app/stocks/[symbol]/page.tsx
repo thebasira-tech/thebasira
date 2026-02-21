@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import StockIcon from "@/components/StockIcon";
 import StockChartSection from "@/components/StockChartSection";
 import { formatNaira } from "@/lib/format";
+import StockNewsSection from "@/components/StockNewsSection";
 
 export const dynamic = "force-dynamic";
 
@@ -58,7 +59,7 @@ export default async function StockDetailPage({
       </div>
 
       <StockChartSection symbol={stock.symbol} bars={bars} />
-
+      <StockNewsSection symbol={stock.symbol} />
       <p className="text-gray-700 mt-6">{stock.symbol} charts and data are for informational purposes only.</p>
     </main>
   );
