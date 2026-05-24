@@ -1,7 +1,6 @@
 "use client";
 
 import PriceChart from "@/components/PriceChart";
-import PriceMoveExplainer from "@/components/PriceMoveExplainer";
 
 type Bar = {
   time: string; // YYYY-MM-DD
@@ -24,11 +23,6 @@ export default function StockChartSection({
       <div className="border rounded-xl p-4 mb-6">
         <div className="text-sm text-gray-500">Chart</div>
         <div className="mt-2 text-sm">No historical data available yet.</div>
-
-        {/* AI explainer still useful even if chart bars are missing */}
-        <div className="mt-4">
-          <PriceMoveExplainer symbol={symbol} />
-        </div>
       </div>
     );
   }
@@ -57,11 +51,6 @@ export default function StockChartSection({
 
       {/* PriceChart expects prop name "data" and DailyBar-like shape */}
       <PriceChart data={bars as any} />
-
-      {/* AI explainer injected under chart */}
-      <div className="mt-4">
-        <PriceMoveExplainer symbol={symbol} />
-      </div>
     </section>
   );
 }
