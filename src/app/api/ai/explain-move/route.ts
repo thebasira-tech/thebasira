@@ -233,10 +233,19 @@ export async function GET(req: NextRequest) {
           }
 
           if (event.type === "error") {
+            const errorEvent = event as unknown as { message?: string; error?: { message?: string } };
+          
             sendEvent(controller, encoder, "error", {
-              message: event.error?.message || "OpenAI stream error",
+              message:
+                errorEvent.error?.message ||
+                errorEvent.message ||
+                "OpenAI stream error",
             });
-
+          
+            sendEvent(controller, encoder, "done", { ok: false });
+            safeClose();
+            return;
+          }
           if (event.type === "response.completed") {
             sendEvent(controller, encoder, "done", { ok: true });
             safeClose();

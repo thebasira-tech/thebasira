@@ -79,8 +79,11 @@ export default function PriceChart({ data, height = 360 }: Props) {
     const volume = chart.addSeries(HistogramSeries, {
       priceFormat: { type: "volume" },
       priceScaleId: "", // separate (hidden) scale
-      // Put volume bars at the bottom quarter-ish of chart
-      scaleMargins: { top: 0.75, bottom: 0.0 },
+    });
+    
+    // Put volume bars at the bottom quarter-ish of chart
+    volume.priceScale().applyOptions({
+      scaleMargins: { top: 0.75, bottom: 0 },
     });
 
     // Give the price series more room above volume

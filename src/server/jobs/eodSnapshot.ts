@@ -187,21 +187,13 @@ export async function runEodSnapshot() {
         where: { symbol_date: { symbol: i.symbol, date: i.date } },
         update: {
           name: i.name,
-          value: i.value,
-          high: i.high,
-          low: i.low,
-          change: i.change,
-          changePct: i.changePct,
+          ...(i.value != null ? { value: i.value } : {}),
         },
         create: {
           symbol: i.symbol,
           date: i.date,
           name: i.name,
-          value: i.value,
-          high: i.high,
-          low: i.low,
-          change: i.change,
-          changePct: i.changePct,
+          value: i.value ?? 0,
         },
       });
 

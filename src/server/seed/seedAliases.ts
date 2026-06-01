@@ -19,7 +19,6 @@ const ALIASES: Record<string, string[]> = {
   DANGSUGAR: ["Dangote Sugar", "DSR", "Dangote Sugar Refinery"],
   OANDO: ["Oando Plc", "Oando"],
   TOTAL: ["TotalEnergies", "Total Nigeria", "TotalEnergies Nigeria"],
-  ZENITHBANK: ["Zenith", "Zenith Bank", "Zenith Plc"],
 };
 
 export async function seedAliases() {
