@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
+import { Analytics } from '@vercel/analytics/next';
 
 export const metadata = {
   title: "Basira",
@@ -19,6 +20,7 @@ export default function RootLayout({
         <SiteHeader />
         <div className="min-h-[calc(100vh-72px)]">{children}</div>
         <SiteFooter />
+        <Analytics />
       </body>
 
     </html>
