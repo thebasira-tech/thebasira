@@ -2,10 +2,55 @@ import { prisma } from "@/lib/prisma";
 
 export async function seedNewsSources() {
   const sources = [
-    { name: "Nairametrics", feedUrl: "https://nairametrics.com/feed", homepage: "https://nairametrics.com", country: "NG" },
-    { name: "Premium Times", feedUrl: "https://www.premiumtimesng.com/feed", homepage: "https://www.premiumtimesng.com", country: "NG" },
-    { name: "AllAfrica (Business)", feedUrl: "https://allafrica.com/tools/headlines/rdf/business/headlines.rdf", homepage: "https://allafrica.com/business/", country: "AF" },
-    { name: "Channels TV", feedUrl: "https://www.channelstv.com/feed/", homepage: "https://www.channelstv.com", country: "NG"},      
+    // High-signal Nigerian markets/business feeds
+    {
+      name: "Nairametrics (Markets)",
+      feedUrl: "https://nairametrics.com/category/markets/feed/",
+      homepage: "https://nairametrics.com/category/markets/",
+      country: "NG",
+    },
+    {
+      name: "Nairametrics (Companies)",
+      feedUrl: "https://nairametrics.com/category/exclusives/companies/feed/",
+      homepage: "https://nairametrics.com/category/exclusives/companies/",
+      country: "NG",
+    },
+    {
+      name: "BusinessDay",
+      feedUrl: "https://businessday.ng/feed/",
+      homepage: "https://businessday.ng",
+      country: "NG",
+    },
+    {
+      name: "Punch (Business)",
+      feedUrl: "https://punchng.com/topics/business/feed/",
+      homepage: "https://punchng.com/topics/business/",
+      country: "NG",
+    },
+    {
+      name: "Vanguard (Business)",
+      feedUrl: "https://www.vanguardngr.com/category/business/feed/",
+      homepage: "https://www.vanguardngr.com/category/business/",
+      country: "NG",
+    },
+    {
+      name: "The Guardian NG (Business)",
+      feedUrl: "https://guardian.ng/category/business-services/feed/",
+      homepage: "https://guardian.ng/category/business-services/",
+      country: "NG",
+    },
+    {
+      name: "Premium Times",
+      feedUrl: "https://www.premiumtimesng.com/feed",
+      homepage: "https://www.premiumtimesng.com",
+      country: "NG",
+    },
+    {
+      name: "Channels TV",
+      feedUrl: "https://www.channelstv.com/feed/",
+      homepage: "https://www.channelstv.com",
+      country: "NG",
+    },
   ];
 
   for (const s of sources) {
