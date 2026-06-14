@@ -51,6 +51,25 @@ export async function seedNewsSources() {
       homepage: "https://www.channelstv.com",
       country: "NG",
     },
+    // New: company-result-heavy and markets-focused additions
+    {
+      name: "Proshare",
+      feedUrl: "https://www.proshareng.com/feed",
+      homepage: "https://www.proshareng.com",
+      country: "NG",
+    },
+    {
+      name: "Investors King",
+      feedUrl: "https://investorsking.com/feed",
+      homepage: "https://investorsking.com",
+      country: "NG",
+    },
+    {
+      name: "Business Post Nigeria",
+      feedUrl: "https://businesspost.ng/feed",
+      homepage: "https://businesspost.ng",
+      country: "NG",
+    },
   ];
 
   for (const s of sources) {

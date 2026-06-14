@@ -15,17 +15,14 @@ async function fetchFeedWithRetry(
     try {
       console.log(`🔎 Fetching feed (${i}/${attempts}):`, sourceName, feedUrl);
 
-      // ✅ First try parseURL (often more forgiving)
       try {
         const feed = await parser.parseURL(feedUrl);
         console.log("📰 Items found:", sourceName, feed.items?.length ?? 0);
         return feed;
       } catch (e) {
-        // If parseURL failed, we fallback to manual fetch below
         console.warn("⚠️ parseURL failed, falling back to fetch+parseString:", sourceName, String(e));
       }
 
-      // ✅ Fallback: fetch with UA (helps for 403-type blocks)
       const res = await fetch(feedUrl, {
         headers: {
           "User-Agent": "BasiraBot/1.0 (+https://thebasira.com)",
@@ -36,8 +33,6 @@ async function fetchFeedWithRetry(
       if (!res.ok) throw new Error(`Status code ${res.status}`);
 
       const xml = await res.text();
-
-      // Optional: very light cleanup for malformed XML entities
       const cleaned = xml.replace(/&(?!(amp|lt|gt|quot|apos);)/g, "&amp;");
 
       const feed = await parser.parseString(cleaned);
@@ -75,27 +70,51 @@ function stripSuffixes(name: string) {
   return normalize(name).replace(CORP_SUFFIXES, "").replace(/\s+/g, " ").trim();
 }
 
-// Tickers/short tokens that are real English words and cause false-positive
-// matches inside unrelated headlines (e.g. "UBA" inside "Cuba", "NB" inside
-// "Nb." abbreviations, "TOTAL" inside "total revenue").
+// Tickers/short tokens or stripped names that are real English words, common
+// abbreviations, or generic finance terms — these cause false-positive
+// matches inside unrelated headlines (e.g. "CAP" inside "market cap",
+// "ETI" inside acronyms, "UBA" inside "Cuba").
 const blockedTickerWords = new Set([
-  "access",
-  "unity",
-  "total",
-  "guinness",
-  "invest",
-  "bank",
-  "group",
-  "holdings",
-  "union",
-  "cornerstone",
-  "nb",
-  "uba",
-  "gt",
-  "may",
-  "law",
-  "fbnh",
+  "access", "unity", "total", "guinness", "invest", "bank", "group", "holdings",
+  "union", "cornerstone", "nb", "uba", "gt", "may", "law", "fbnh",
+  "cap", "eti", "ncr", "tip", "ng", "plc", "etf", "fund", "oil", "gas",
+  "first", "trust", "city", "national", "global", "africa", "nigeria",
+  "energy", "industries", "industry", "resources", "capital", "finance",
+  "insurance", "assurance", "value", "income", "growth", "stanbic",
 ]);
+
+function makeMatchers(symbol: string, name: string, aliases: string[] = []): RegExp[] {
+  const sym = normalize(symbol);
+  const matchers: string[] = [];
+
+  // Ticker symbol — require 4+ chars and not a blocked/generic word.
+  if (sym && sym.length >= 4 && !blockedTickerWords.has(sym)) {
+    matchers.push(sym);
+  }
+
+  // Company name with corporate suffixes stripped, e.g. "zenith bank".
+  // Require 6+ chars so short/generic remnants ("cap", "trust") don't qualify.
+  const stripped = stripSuffixes(name);
+  if (stripped && stripped.length >= 6 && !blockedTickerWords.has(stripped)) {
+    matchers.push(stripped);
+  }
+
+  // Aliases (normalized, suffixes stripped too in case an alias includes "Plc").
+  for (const al of aliases) {
+    const a = stripSuffixes(al);
+    if (a.length >= 4 && !blockedTickerWords.has(a)) matchers.push(a);
+  }
+
+  // De-duplicate, then build word-boundary regexes.
+  return Array.from(new Set(matchers)).map(
+    (m) => new RegExp(`\\b${escapeRegex(m)}\\b`)
+  );
+}
+
+function articleMatches(text: string, matchers: RegExp[]) {
+  const t = normalize(text);
+  return matchers.some((re) => re.test(t));
+}
 
 // Market-relevance keywords used to gate articles that don't match any
 // security directly — keeps the NewsArticle table focused on NGX content
@@ -127,38 +146,6 @@ const MARKET_KEYWORDS = [
 function isMarketRelevant(text: string) {
   const t = normalize(text);
   return MARKET_KEYWORDS.some((kw) => t.includes(normalize(kw)));
-}
-
-function makeMatchers(symbol: string, name: string, aliases: string[] = []): RegExp[] {
-  const sym = normalize(symbol);
-  const matchers: string[] = [];
-
-  // Ticker symbol — only if it's long enough and not a common word.
-  if (sym && sym.length >= 3 && !blockedTickerWords.has(sym)) {
-    matchers.push(sym);
-  }
-
-  // Company name with corporate suffixes stripped, e.g. "zenith bank".
-  const stripped = stripSuffixes(name);
-  if (stripped && stripped.length >= 4 && !blockedTickerWords.has(stripped)) {
-    matchers.push(stripped);
-  }
-
-  // Aliases (normalized, suffixes stripped too in case an alias includes "Plc").
-  for (const al of aliases) {
-    const a = stripSuffixes(al);
-    if (a.length >= 3 && !blockedTickerWords.has(a)) matchers.push(a);
-  }
-
-  // De-duplicate, then build word-boundary regexes.
-  return Array.from(new Set(matchers)).map(
-    (m) => new RegExp(`\\b${escapeRegex(m)}\\b`)
-  );
-}
-
-function articleMatches(text: string, matchers: RegExp[]) {
-  const t = normalize(text);
-  return matchers.some((re) => re.test(t));
 }
 
 // Trim a summary to the last complete sentence within maxLen, instead of a
