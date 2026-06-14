@@ -26,8 +26,7 @@ function toVolumeSeriesData(data: DailyBar[]): HistogramData[] {
   return data.map((b) => ({
     time: b.time,
     value: b.volume,
-    // subtle color; you can change later
-    color: b.close >= b.open ? "rgba(22, 163, 74, 0.35)" : "rgba(220, 38, 38, 0.35)",
+    color: b.close >= b.open ? "rgba(22, 199, 132, 0.35)" : "rgba(234, 57, 67, 0.35)",
   }));
 }
 
@@ -54,24 +53,24 @@ export default function PriceChart({ data, height = 360 }: Props) {
     const chart = createChart(containerRef.current, {
       height,
       layout: {
-        background: { type: ColorType.Solid, color: "white" },
-        textColor: "#111827",
+        background: { type: ColorType.Solid, color: "#15191E" },
+        textColor: "#8B96A5",
       },
       grid: {
-        vertLines: { color: "#F3F4F6" },
-        horzLines: { color: "#F3F4F6" },
+        vertLines: { color: "#23282E" },
+        horzLines: { color: "#23282E" },
       },
-      rightPriceScale: { borderColor: "#E5E7EB" },
-      timeScale: { borderColor: "#E5E7EB" },
+      rightPriceScale: { borderColor: "#23282E" },
+      timeScale: { borderColor: "#23282E" },
       crosshair: {
-        vertLine: { color: "#9CA3AF" },
-        horzLine: { color: "#9CA3AF" },
+        vertLine: { color: "#3A4047" },
+        horzLine: { color: "#3A4047" },
       },
     });
 
     // ✅ Price line (top area)
     const line = chart.addSeries(LineSeries, {
-      color: "#16A34A",
+      color: "#00A878",
       lineWidth: 2,
     });
 
@@ -80,7 +79,7 @@ export default function PriceChart({ data, height = 360 }: Props) {
       priceFormat: { type: "volume" },
       priceScaleId: "", // separate (hidden) scale
     });
-    
+
     // Put volume bars at the bottom quarter-ish of chart
     volume.priceScale().applyOptions({
       scaleMargins: { top: 0.75, bottom: 0 },
@@ -129,17 +128,17 @@ export default function PriceChart({ data, height = 360 }: Props) {
   const isUp = change ? change.diff >= 0 : true;
 
   return (
-    <div className="border rounded-xl bg-white p-4">
+    <div className="rounded-xl border border-border bg-surface p-4">
       <div className="flex items-baseline justify-between mb-2">
         <div>
-          <div className="text-sm font-medium text-gray-900">Price</div>
-          <div className="text-xs text-gray-500">EOD series (simulated)</div>
+          <div className="text-sm font-medium text-text-primary">Price</div>
+          <div className="text-xs text-text-muted">EOD series (simulated)</div>
         </div>
 
         {change && (
           <div
-            className={`text-xs font-medium ${
-              isUp ? "text-green-600" : "text-red-600"
+            className={`text-xs font-data font-medium ${
+              isUp ? "text-up" : "text-down"
             }`}
             title="Change vs previous close"
           >

@@ -136,13 +136,13 @@ export default function PriceMoveExplainer({ symbol }: Props) {
   }
 
   return (
-    <section className="rounded-xl border border-zinc-200 bg-white p-4 shadow-sm">
+    <section className="rounded-xl border border-border bg-surface p-4">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <h3 className="text-sm font-semibold text-zinc-900">
+          <h3 className="text-sm font-semibold text-text-primary">
             Why is {symbol} up/down today?
           </h3>
-          <p className="mt-1 text-xs text-zinc-600">
+          <p className="mt-1 text-xs text-text-muted">
             DB-grounded explanation from Basira prices + news mentions.
           </p>
         </div>
@@ -151,14 +151,14 @@ export default function PriceMoveExplainer({ symbol }: Props) {
           {status === "streaming" ? (
             <button
               onClick={stop}
-              className="rounded-lg border border-zinc-200 px-3 py-2 text-xs font-medium text-zinc-900 hover:bg-zinc-50"
+              className="rounded-lg border border-border px-3 py-2 text-xs font-medium text-text-primary hover:bg-surface-2 transition-colors"
             >
               Stop
             </button>
           ) : (
             <button
               onClick={start}
-              className="rounded-lg bg-zinc-900 px-3 py-2 text-xs font-medium text-white hover:bg-zinc-800"
+              className="rounded-lg bg-accent px-3 py-2 text-xs font-medium text-background hover:bg-accent/90 transition-colors"
             >
               Explain
             </button>
@@ -168,25 +168,25 @@ export default function PriceMoveExplainer({ symbol }: Props) {
 
       <div className="mt-3">
         {status === "idle" && (
-          <div className="text-sm text-zinc-600">
-            Click <span className="font-medium text-zinc-900">Explain</span> to generate a short driver summary.
+          <div className="text-sm text-text-muted">
+            Click <span className="font-medium text-text-primary">Explain</span> to generate a short driver summary.
           </div>
         )}
 
         {status === "error" && (
-          <div className="text-sm text-red-600">
+          <div className="text-sm text-down">
             {error || "AI explainer failed to load. Try again."}
           </div>
         )}
 
         {(status === "streaming" || status === "done") && (
-          <pre className="whitespace-pre-wrap break-words rounded-lg bg-zinc-50 p-3 text-sm text-zinc-900">
+          <pre className="whitespace-pre-wrap break-words rounded-lg bg-surface-2 border border-border p-3 text-sm text-text-primary">
             {text || "Generating explanation…"}
           </pre>
         )}
       </div>
 
-      <div className="mt-3 text-xs text-zinc-500">
+      <div className="mt-3 text-xs text-text-muted">
         Not investment advice. Output may include labeled inference when the DB lacks definitive drivers.
       </div>
     </section>

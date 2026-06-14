@@ -8,8 +8,8 @@ type SortKey = "change_ytd" | "marketCap" | "volume";
 type SortDir = "asc" | "desc";
 
 function SortIndicator({ active, dir }: { active: boolean; dir: SortDir }) {
-  if (!active) return <span className="ml-1 text-[10px] text-gray-300">↕</span>;
-  return <span className="ml-1 text-[10px] text-gray-600">{dir === "asc" ? "↑" : "↓"}</span>;
+  if (!active) return <span className="ml-1 text-[10px] text-text-muted/50">↕</span>;
+  return <span className="ml-1 text-[10px] text-text-primary">{dir === "asc" ? "↑" : "↓"}</span>;
 }
 
 export default function EtfsPage() {
@@ -63,62 +63,64 @@ export default function EtfsPage() {
   return (
     <main className="max-w-7xl mx-auto px-6 py-8">
       <header className="mb-6">
-        <h1 className="text-2xl font-semibold tracking-tight">ETFs (NGX)</h1>
-        <p className="text-gray-600 mt-1">
+        <h1 className="text-2xl font-display font-semibold tracking-tight text-text-primary">ETFs (NGX)</h1>
+        <p className="text-text-muted mt-1">
           YTD % is simulated for v1. Real calculations will use historical pricing.
         </p>
       </header>
 
       {/* ETF Summary Strip */}
       <section className="mb-6 grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="border rounded-xl p-4 bg-white">
-          <div className="text-xs text-gray-500">Total ETF Market Cap (Simulated)</div>
-          <div className="mt-1 text-xl font-semibold">{formatNaira(totalEtfMarketCap)}</div>
+        <div className="rounded-xl p-4 bg-surface border border-border">
+          <div className="text-xs text-text-muted uppercase tracking-wide">Total ETF Market Cap (Simulated)</div>
+          <div className="mt-1 text-2xl font-display font-semibold text-text-primary">
+            {formatNaira(totalEtfMarketCap)}
+          </div>
         </div>
 
-        <div className="border rounded-xl p-4 bg-white">
-          <div className="text-xs text-gray-500">Best YTD</div>
+        <div className="rounded-xl p-4 bg-surface border border-border">
+          <div className="text-xs text-text-muted uppercase tracking-wide">Best YTD</div>
           {bestYtd ? (
             <div className="mt-2 flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <StockIcon symbol={bestYtd.symbol} size={28} />
                 <div>
-                  <div className="font-medium">{bestYtd.symbol}</div>
-                  <div className="text-xs text-gray-500">{bestYtd.name}</div>
+                  <div className="font-medium text-text-primary">{bestYtd.symbol}</div>
+                  <div className="text-xs text-text-muted">{bestYtd.name}</div>
                 </div>
               </div>
               <div className="text-right">
-                <div className="text-sm">{formatNaira(bestYtd.price)}</div>
-                <div className="text-sm font-medium text-green-600">
+                <div className="text-sm font-data text-text-primary">{formatNaira(bestYtd.price)}</div>
+                <div className="text-sm font-data font-medium text-up">
                   +{bestYtd.change_ytd}%
                 </div>
               </div>
             </div>
           ) : (
-            <div className="mt-2 text-sm text-gray-500">—</div>
+            <div className="mt-2 text-sm text-text-muted">—</div>
           )}
         </div>
 
-        <div className="border rounded-xl p-4 bg-white">
-          <div className="text-xs text-gray-500">Worst YTD</div>
+        <div className="rounded-xl p-4 bg-surface border border-border">
+          <div className="text-xs text-text-muted uppercase tracking-wide">Worst YTD</div>
           {worstYtd ? (
             <div className="mt-2 flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <StockIcon symbol={worstYtd.symbol} size={28} />
                 <div>
-                  <div className="font-medium">{worstYtd.symbol}</div>
-                  <div className="text-xs text-gray-500">{worstYtd.name}</div>
+                  <div className="font-medium text-text-primary">{worstYtd.symbol}</div>
+                  <div className="text-xs text-text-muted">{worstYtd.name}</div>
                 </div>
               </div>
               <div className="text-right">
-                <div className="text-sm">{formatNaira(worstYtd.price)}</div>
-                <div className="text-sm font-medium text-red-600">
+                <div className="text-sm font-data text-text-primary">{formatNaira(worstYtd.price)}</div>
+                <div className="text-sm font-data font-medium text-down">
                   {worstYtd.change_ytd}%
                 </div>
               </div>
             </div>
           ) : (
-            <div className="mt-2 text-sm text-gray-500">—</div>
+            <div className="mt-2 text-sm text-text-muted">—</div>
           )}
         </div>
       </section>
@@ -130,20 +132,20 @@ export default function EtfsPage() {
           placeholder="Search ETFs by symbol or name"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          className="w-full px-4 py-2 border rounded-lg text-sm"
+          className="w-full px-4 py-2 bg-surface border border-border rounded-lg text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-1 focus:ring-accent"
         />
       </div>
 
       {/* ETFs Table */}
-      <div className="overflow-x-auto rounded-xl border bg-white">
+      <div className="overflow-x-auto rounded-xl border border-border bg-surface scroll-dark">
         <table className="min-w-full text-sm">
-          <thead className="bg-gray-50 text-gray-600">
+          <thead className="bg-surface-2">
             <tr>
-              <th className="px-4 py-3 text-left">ETF</th>
-              <th className="px-4 py-3 text-right">Price</th>
+              <th className="px-4 py-3 text-left text-text-muted font-medium text-xs uppercase tracking-wide">ETF</th>
+              <th className="px-4 py-3 text-right text-text-muted font-medium text-xs uppercase tracking-wide">Price</th>
 
               <th
-                className="px-4 py-3 text-right cursor-pointer select-none"
+                className="px-4 py-3 text-right cursor-pointer select-none text-text-muted font-medium text-xs uppercase tracking-wide hover:text-text-primary transition-colors"
                 onClick={() => toggleSort("change_ytd")}
                 title="Sort by YTD %"
               >
@@ -151,7 +153,7 @@ export default function EtfsPage() {
               </th>
 
               <th
-                className="px-4 py-3 text-right cursor-pointer select-none"
+                className="px-4 py-3 text-right cursor-pointer select-none text-text-muted font-medium text-xs uppercase tracking-wide hover:text-text-primary transition-colors"
                 onClick={() => toggleSort("volume")}
                 title="Sort by Volume"
               >
@@ -159,7 +161,7 @@ export default function EtfsPage() {
               </th>
 
               <th
-                className="px-4 py-3 text-right cursor-pointer select-none"
+                className="px-4 py-3 text-right cursor-pointer select-none text-text-muted font-medium text-xs uppercase tracking-wide hover:text-text-primary transition-colors"
                 onClick={() => toggleSort("marketCap")}
                 title="Sort by Market Cap"
               >
@@ -170,39 +172,39 @@ export default function EtfsPage() {
 
           <tbody>
             {sorted.map((etf) => (
-              <tr key={etf.symbol} className="border-t hover:bg-gray-50">
+              <tr key={etf.symbol} className="border-t border-border hover:bg-surface-2 transition-colors">
                 <td className="px-4 py-3">
                   <div className="flex items-center gap-3">
                     <StockIcon symbol={etf.symbol} size={28} />
                     <div>
-                      <div className="font-medium">{etf.symbol}</div>
-                      <div className="text-xs text-gray-500">{etf.name}</div>
+                      <div className="font-medium text-text-primary">{etf.symbol}</div>
+                      <div className="text-xs text-text-muted">{etf.name}</div>
                     </div>
                   </div>
                 </td>
 
-                <td className="px-4 py-3 text-right">{formatNaira(etf.price)}</td>
+                <td className="px-4 py-3 text-right font-data text-text-primary">{formatNaira(etf.price)}</td>
 
                 <td
-                  className={`px-4 py-3 text-right font-medium ${
-                    etf.change_ytd >= 0 ? "text-green-600" : "text-red-600"
+                  className={`px-4 py-3 text-right font-data font-medium ${
+                    etf.change_ytd >= 0 ? "text-up" : "text-down"
                   }`}
                 >
                   {etf.change_ytd >= 0 ? "+" : ""}
                   {etf.change_ytd}%
                 </td>
 
-                <td className="px-4 py-3 text-right">
+                <td className="px-4 py-3 text-right font-data text-text-muted">
                   {etf.volume.toLocaleString("en-NG")}
                 </td>
 
-                <td className="px-4 py-3 text-right">{formatNaira(etf.marketCap)}</td>
+                <td className="px-4 py-3 text-right font-data text-text-primary">{formatNaira(etf.marketCap)}</td>
               </tr>
             ))}
 
             {sorted.length === 0 && (
               <tr>
-                <td className="px-4 py-6 text-center text-sm text-gray-500" colSpan={5}>
+                <td className="px-4 py-6 text-center text-sm text-text-muted" colSpan={5}>
                   No ETFs match your search.
                 </td>
               </tr>
@@ -211,7 +213,7 @@ export default function EtfsPage() {
         </table>
       </div>
 
-      <footer className="mt-10 text-xs text-gray-500">
+      <footer className="mt-10 text-xs text-text-muted">
         Market data displayed is simulated and for informational purposes only. Not investment advice.
       </footer>
     </main>

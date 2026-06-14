@@ -5,47 +5,46 @@ import NaijaStocksLogo from "@/components/NaijaStocksLogo";
 
 export default function SiteHeader() {
   return (
-    <header className="border-b bg-white">
+    <header className="border-b border-border bg-background">
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
         {/* Brand */}
         <div className="flex items-center gap-3">
           <Link href="/" className="flex items-center gap-3">
             <NaijaStocksLogo size={30} />
             <div className="leading-tight">
-              <div className="text-xl font-bold tracking-tight text-gray-900">Basira</div>
+              <div className="text-xl font-display font-bold tracking-tight text-text-primary">Basira</div>
             </div>
           </Link>
         </div>
 
         {/* Nav */}
         <nav className="flex items-center gap-6 text-sm">
-          <Link href="/" className="text-gray-700 hover:text-gray-900">
+          <Link href="/" className="text-text-primary hover:text-accent transition-colors">
             Stocks
           </Link>
-          <Link href="/etfs" className="text-gray-700 hover:text-gray-900">
+          <Link href="/etfs" className="text-text-primary hover:text-accent transition-colors">
             ETFs
           </Link>
-          <span className="text-gray-300">•</span>
-          <span className="text-gray-500">Sectors (soon)</span>
-          <span className="text-gray-300">•</span>
-          <Link href="/about" className="text-gray-700 hover:text-gray-900">
+          <span className="text-border">•</span>
+          <span className="text-text-muted">Sectors (soon)</span>
+          <span className="text-border">•</span>
+          <Link href="/about" className="text-text-primary hover:text-accent transition-colors">
             About
           </Link>
         </nav>
 
         {/* Status pill (mock for now) */}
         <div className="hidden sm:flex items-center gap-2">
-          <span className="text-xs text-gray-500">Market</span>
-          <span className="inline-flex items-center rounded-full border px-3 py-1 text-xs font-medium">
-            <span className="mr-2 inline-block h-2 w-2 rounded-full bg-green-600" />
+          <span className="text-xs text-text-muted">Market</span>
+          <span className="inline-flex items-center rounded-full border border-border px-3 py-1 text-xs font-medium text-text-primary">
+            <span className="mr-2 inline-block h-2 w-2 rounded-full bg-up" />
             Open (simulated)
           </span>
         </div>
       </div>
 
       {/* Accent line */}
-      <div className="h-1 bg-green-600" />
+      <div className="h-1 bg-accent" />
     </header>
   );
 }
-

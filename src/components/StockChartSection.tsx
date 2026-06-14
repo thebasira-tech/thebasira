@@ -21,9 +21,9 @@ export default function StockChartSection({
 }) {
   if (!bars?.length) {
     return (
-      <div className="border rounded-xl p-4 mb-6">
-        <div className="text-sm text-gray-500">Chart</div>
-        <div className="mt-2 text-sm">No historical data available yet.</div>
+      <div className="rounded-xl border border-border bg-surface p-4 mb-6">
+        <div className="text-sm text-text-muted">Chart</div>
+        <div className="mt-2 text-sm text-text-primary">No historical data available yet.</div>
 
         {/* AI explainer still useful even if chart bars are missing */}
         <div className="mt-4">
@@ -41,14 +41,14 @@ export default function StockChartSection({
   const isUp = diff >= 0;
 
   return (
-    <section className="border rounded-xl p-4 mb-6 bg-white">
+    <section className="rounded-xl border border-border p-4 mb-6 bg-surface">
       <div className="flex items-center justify-between mb-3">
         <div>
-          <div className="text-sm text-gray-500">Price Chart</div>
-          <div className="text-lg font-semibold">{symbol}</div>
+          <div className="text-sm text-text-muted">Price Chart</div>
+          <div className="text-lg font-display font-semibold text-text-primary">{symbol}</div>
         </div>
         {prev && (
-          <div className={`text-sm font-medium ${isUp ? "text-green-600" : "text-red-600"}`}>
+          <div className={`text-sm font-data font-medium ${isUp ? "text-up" : "text-down"}`}>
             {isUp ? "▲" : "▼"} {isUp ? "+" : ""}
             {pct.toFixed(2)}%
           </div>

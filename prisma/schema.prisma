@@ -4,30 +4,24 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
-
-enum AssetType {
-  EQUITY
-  ETF
-  DEBT
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model Security {
-  id        Int       @id @default(autoincrement())
-  symbol    String    @unique
-  name      String
-  assetType AssetType
-  sector    String?
-  csiStatus String?
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-
+  id           Int             @id @default(autoincrement())
+  symbol       String          @unique
+  name         String
+  assetType    AssetType
+  sector       String?
+  csiStatus    String?
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
   dailyPrices  DailyPrice[]
+  newsMentions NewsMention[]   @relation("SecurityNewsMentions")
   ohlcvBars    OhlcvBar[]
-  newsMentions NewsMention[] @relation("SecurityNewsMentions")
-  aliases SecurityAlias[]
+  aliases      SecurityAlias[]
 }
 
 model DailyPrice {
@@ -44,8 +38,7 @@ model DailyPrice {
   high52w   Float?
   low52w    Float?
   createdAt DateTime @default(now())
-
-  security Security @relation(fields: [symbol], references: [symbol], onDelete: Cascade)
+  security  Security @relation(fields: [symbol], references: [symbol], onDelete: Cascade)
 
   @@unique([symbol, date])
   @@index([date])
@@ -61,8 +54,7 @@ model OhlcvBar {
   close     Float
   volume    Float?
   createdAt DateTime @default(now())
-
-  security Security @relation(fields: [symbol], references: [symbol], onDelete: Cascade)
+  security  Security @relation(fields: [symbol], references: [symbol], onDelete: Cascade)
 
   @@unique([symbol, date])
   @@index([symbol, date])
@@ -85,7 +77,7 @@ model IndexValue {
 model IngestionRun {
   id        String    @id @default(cuid())
   job       String
-  status    String // "STARTED" | "SUCCESS" | "FAILED"
+  status    String
   startedAt DateTime  @default(now())
   endedAt   DateTime?
   meta      Json?
@@ -100,56 +92,53 @@ model RecentlyViewedSymbol {
 }
 
 model NewsSource {
-  id        String   @id @default(cuid())
+  id        String        @id @default(cuid())
   name      String
   homepage  String?
-  feedUrl   String   @unique
+  feedUrl   String        @unique
   country   String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  articles NewsArticle[]
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+  articles  NewsArticle[]
 }
 
 model NewsArticle {
-  id       String     @id @default(cuid())
-  sourceId String
-  source   NewsSource @relation(fields: [sourceId], references: [id])
-
+  id          String        @id @default(cuid())
+  sourceId    String
   title       String
-  url         String    @unique
+  url         String        @unique
   publishedAt DateTime?
   summary     String?
   imageUrl    String?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  mentions NewsMention[]
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  source      NewsSource    @relation(fields: [sourceId], references: [id])
+  mentions    NewsMention[]
 }
 
 model NewsMention {
   id        String      @id @default(cuid())
   articleId String
+  symbol    String
+  createdAt DateTime    @default(now())
   article   NewsArticle @relation(fields: [articleId], references: [id])
-
-  symbol   String
-  security Security @relation("SecurityNewsMentions", fields: [symbol], references: [symbol])
-
-  createdAt DateTime @default(now())
+  security  Security    @relation("SecurityNewsMentions", fields: [symbol], references: [symbol])
 
   @@unique([articleId, symbol])
   @@index([symbol, createdAt])
 }
 
 model SecurityAlias {
-  id     String @id @default(cuid())
-  symbol String
-  alias  String
-
+  id       String   @id @default(cuid())
+  symbol   String
+  alias    String
   security Security @relation(fields: [symbol], references: [symbol])
 
   @@unique([symbol, alias], name: "symbol_alias")
 }
 
-
+enum AssetType {
+  EQUITY
+  ETF
+  DEBT
+}
