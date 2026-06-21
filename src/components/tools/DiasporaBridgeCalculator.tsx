@@ -248,7 +248,7 @@ export default function DiasporaBridgeCalculator({
                 fontSize: 12,
               }}
               labelStyle={{ color: "#F5F6F7" }}
-              formatter={(value: number) => formatNaira(value)}
+              formatter={(value) => formatNaira(Number(value))}
             />
             <Legend wrapperStyle={{ fontSize: 12 }} />
             <Line type="monotone" dataKey="usdValueInNaira" name="Held as USD (converted today)" stroke="#16C784" strokeWidth={2} dot={false} />

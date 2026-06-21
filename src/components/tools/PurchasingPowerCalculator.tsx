@@ -263,7 +263,7 @@ export default function PurchasingPowerCalculator({
                 fontSize: 12,
               }}
               labelStyle={{ color: "#F5F6F7" }}
-              formatter={(value: number) => formatNaira(value)}
+              formatter={(value) => formatNaira(Number(value))}
             />
             <Legend wrapperStyle={{ fontSize: 12 }} />
             <Line type="monotone" dataKey="nominal" name="Cash (nominal)" stroke="#8B96A5" strokeWidth={2} dot={false} />
