@@ -1,3 +1,40 @@
+enum Sentiment {
+  BULLISH
+  BEARISH
+}
+
+model InflationRate {
+  id        Int      @id @default(autoincrement())
+  year      Int
+  month     Int
+  cpi       Float
+  yoyRate   Float
+  createdAt DateTime @default(now())
+
+  @@unique([year, month])
+}
+
+model FxRate {
+  id        Int      @id @default(autoincrement())
+  date      DateTime @db.Date
+  pair      String
+  rate      Float
+  createdAt DateTime @default(now())
+
+  @@unique([date, pair])
+}
+
+model MarketPulseVote {
+  id        Int       @id @default(autoincrement())
+  date      DateTime  @db.Date
+  sentiment Sentiment
+  voterHash String
+  sector    String    // "ALL" for overall market sentiment, or a sector name
+  createdAt DateTime  @default(now())
+
+  @@unique([date, voterHash, sector])
+}
+
 generator client {
   provider   = "prisma-client-js"
   engineType = "binary"

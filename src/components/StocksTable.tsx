@@ -42,7 +42,7 @@ function PctPill({ v }: { v: number | null | undefined }) {
   const positive = v >= 0;
   return (
     <span
-      className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md font-data text-xs font-medium ${
+      className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md font-data text-xs font-medium whitespace-nowrap ${
         positive ? "bg-up/10 text-up" : "bg-down/10 text-down"
       }`}
     >
@@ -124,7 +124,7 @@ export default function StocksTable({ initialStocks }: { initialStocks: StockRow
     mobileTf === "1h" ? "change_1h" : mobileTf === "7d" ? "change_7d" : "change_1d";
 
   const headerCls =
-    "px-4 py-3 text-right cursor-pointer select-none text-text-muted font-medium text-xs uppercase tracking-wide hover:text-text-primary transition-colors";
+    "px-4 py-3 text-right cursor-pointer select-none text-text-muted font-medium text-xs uppercase tracking-wide hover:text-text-primary transition-colors whitespace-nowrap";
 
   return (
     <>
@@ -167,135 +167,162 @@ export default function StocksTable({ initialStocks }: { initialStocks: StockRow
         </div>
       </div>
 
-      <div className="overflow-x-auto rounded-xl border border-border bg-surface scroll-dark">
-        <table className="min-w-full text-sm">
-          <thead className="bg-surface-2">
-            <tr>
-              <th className="px-4 py-3 text-left text-text-muted font-medium text-xs uppercase tracking-wide">#</th>
-              <th className="px-4 py-3 text-left text-text-muted font-medium text-xs uppercase tracking-wide">Stock</th>
+      {/* Bounded scroll container: enables both horizontal scroll (mobile)
+          and a frozen header + frozen first column via sticky positioning. */}
+      <div className="rounded-xl border border-border bg-surface overflow-hidden">
+        <div className="overflow-auto max-h-[75vh] scroll-dark">
+          <table className="min-w-full text-sm border-collapse">
+            <thead>
+              <tr>
+                <th className="hidden sm:table-cell sticky top-0 z-20 bg-surface-2 px-4 py-3 text-left text-text-muted font-medium text-xs uppercase tracking-wide whitespace-nowrap">
+                  #
+                </th>
+                <th className="sticky top-0 left-0 z-30 bg-surface-2 px-4 py-3 text-left text-text-muted font-medium text-xs uppercase tracking-wide whitespace-nowrap">
+                  Stock
+                </th>
 
-              <th className={headerCls} onClick={() => toggleSort("price")} title="Sort by Price">
-                Price <SortIndicator active={sortKey === "price"} dir={sortDir} />
-              </th>
-
-              <th
-                className={`hidden sm:table-cell ${headerCls}`}
-                onClick={() => toggleSort("change_1h")}
-                title="Sort by 1H change"
-              >
-                1H % <SortIndicator active={sortKey === "change_1h"} dir={sortDir} />
-              </th>
-
-              <th
-                className={`hidden sm:table-cell ${headerCls}`}
-                onClick={() => toggleSort("change_1d")}
-                title="Sort by 1D change"
-              >
-                1D % <SortIndicator active={sortKey === "change_1d"} dir={sortDir} />
-              </th>
-
-              <th
-                className={`hidden sm:table-cell ${headerCls}`}
-                onClick={() => toggleSort("change_7d")}
-                title="Sort by 7D change"
-              >
-                7D % <SortIndicator active={sortKey === "change_7d"} dir={sortDir} />
-              </th>
-
-              <th
-                className={`sm:hidden ${headerCls}`}
-                onClick={() => toggleSort(mobileChangeKey)}
-                title="Sort by selected timeframe"
-              >
-                Change ({mobileTf.toUpperCase()}){" "}
-                <SortIndicator active={sortKey === mobileChangeKey} dir={sortDir} />
-              </th>
-
-              <th className="hidden md:table-cell px-4 py-3 text-center text-text-muted font-medium text-xs uppercase tracking-wide">
-                Last 7D
-              </th>
-
-              <th className={headerCls} onClick={() => toggleSort("volume")} title="Sort by Volume">
-                Volume <SortIndicator active={sortKey === "volume"} dir={sortDir} />
-              </th>
-
-              <th className={headerCls} onClick={() => toggleSort("marketCap")} title="Sort by Market Cap">
-                Market Cap <SortIndicator active={sortKey === "marketCap"} dir={sortDir} />
-              </th>
-
-              <th className="px-4 py-3 text-left text-text-muted font-medium text-xs uppercase tracking-wide">Sector</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {sorted.map((stock, index) => {
-              const mobileVal = (stock as any)[mobileChangeKey] as number | null | undefined;
-              const trendPositive = (stock.change_7d ?? 0) >= 0;
-
-              return (
-                <tr
-                  key={stock.symbol}
-                  className="border-t border-border hover:bg-surface-2 transition-colors"
+                <th
+                  className={`sticky top-0 z-20 bg-surface-2 ${headerCls}`}
+                  onClick={() => toggleSort("price")}
+                  title="Sort by Price"
                 >
-                  <td className="px-4 py-3 text-text-muted font-data text-xs">{index + 1}</td>
+                  Price <SortIndicator active={sortKey === "price"} dir={sortDir} />
+                </th>
 
-                  <td className="px-4 py-3">
-                    <div className="flex items-center gap-3">
-                      <StockIcon symbol={stock.symbol} size={28} />
-                      <div>
-                        <div className="font-semibold text-text-primary">
-                          <Link href={`/stocks/${stock.symbol}`} className="hover:text-accent transition-colors">
-                            {stock.symbol}
-                          </Link>
+                <th
+                  className={`hidden sm:table-cell sticky top-0 z-20 bg-surface-2 ${headerCls}`}
+                  onClick={() => toggleSort("change_1h")}
+                  title="Sort by 1H change"
+                >
+                  1H % <SortIndicator active={sortKey === "change_1h"} dir={sortDir} />
+                </th>
+
+                <th
+                  className={`hidden sm:table-cell sticky top-0 z-20 bg-surface-2 ${headerCls}`}
+                  onClick={() => toggleSort("change_1d")}
+                  title="Sort by 1D change"
+                >
+                  1D % <SortIndicator active={sortKey === "change_1d"} dir={sortDir} />
+                </th>
+
+                <th
+                  className={`hidden sm:table-cell sticky top-0 z-20 bg-surface-2 ${headerCls}`}
+                  onClick={() => toggleSort("change_7d")}
+                  title="Sort by 7D change"
+                >
+                  7D % <SortIndicator active={sortKey === "change_7d"} dir={sortDir} />
+                </th>
+
+                <th
+                  className={`sm:hidden sticky top-0 z-20 bg-surface-2 ${headerCls}`}
+                  onClick={() => toggleSort(mobileChangeKey)}
+                  title="Sort by selected timeframe"
+                >
+                  {mobileTf.toUpperCase()} %{" "}
+                  <SortIndicator active={sortKey === mobileChangeKey} dir={sortDir} />
+                </th>
+
+                <th className="hidden md:table-cell sticky top-0 z-20 bg-surface-2 px-4 py-3 text-center text-text-muted font-medium text-xs uppercase tracking-wide whitespace-nowrap">
+                  Last 7D
+                </th>
+
+                <th
+                  className={`hidden sm:table-cell sticky top-0 z-20 bg-surface-2 ${headerCls}`}
+                  onClick={() => toggleSort("volume")}
+                  title="Sort by Volume"
+                >
+                  Volume <SortIndicator active={sortKey === "volume"} dir={sortDir} />
+                </th>
+
+                <th
+                  className={`sticky top-0 z-20 bg-surface-2 ${headerCls}`}
+                  onClick={() => toggleSort("marketCap")}
+                  title="Sort by Market Cap"
+                >
+                  Mkt Cap <SortIndicator active={sortKey === "marketCap"} dir={sortDir} />
+                </th>
+
+                <th className="hidden lg:table-cell sticky top-0 z-20 bg-surface-2 px-4 py-3 text-left text-text-muted font-medium text-xs uppercase tracking-wide whitespace-nowrap">
+                  Sector
+                </th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {sorted.map((stock, index) => {
+                const mobileVal = (stock as any)[mobileChangeKey] as number | null | undefined;
+                const trendPositive = (stock.change_7d ?? 0) >= 0;
+
+                return (
+                  <tr key={stock.symbol} className="group border-t border-border">
+                    <td className="hidden sm:table-cell px-4 py-3 text-text-muted font-data text-xs bg-surface group-hover:bg-surface-2 transition-colors">
+                      {index + 1}
+                    </td>
+
+                    <td className="sticky left-0 z-10 bg-surface group-hover:bg-surface-2 transition-colors px-4 py-3">
+                      <div className="flex items-center gap-3 min-w-[140px] sm:min-w-[180px]">
+                        <StockIcon symbol={stock.symbol} size={28} />
+                        <div>
+                          <div className="font-semibold text-text-primary">
+                            <Link href={`/stocks/${stock.symbol}`} className="hover:text-accent transition-colors">
+                              {stock.symbol}
+                            </Link>
+                          </div>
+                          <div className="text-xs text-text-muted truncate max-w-[120px] sm:max-w-none">
+                            {stock.name}
+                          </div>
                         </div>
-                        <div className="text-xs text-text-muted">{stock.name}</div>
                       </div>
-                    </div>
-                  </td>
+                    </td>
 
-                  <td className="px-4 py-3 text-right font-data font-medium text-text-primary">
-                    {formatNaira(stock.price || 0)}
-                  </td>
+                    <td className="px-4 py-3 text-right font-data font-medium text-text-primary whitespace-nowrap">
+                      {formatNaira(stock.price || 0)}
+                    </td>
 
-                  <td className="hidden sm:table-cell px-4 py-3 text-right">
-                    <PctPill v={stock.change_1h} />
-                  </td>
+                    <td className="hidden sm:table-cell px-4 py-3 text-right">
+                      <PctPill v={stock.change_1h} />
+                    </td>
 
-                  <td className="hidden sm:table-cell px-4 py-3 text-right">
-                    <PctPill v={stock.change_1d} />
-                  </td>
+                    <td className="hidden sm:table-cell px-4 py-3 text-right">
+                      <PctPill v={stock.change_1d} />
+                    </td>
 
-                  <td className="hidden sm:table-cell px-4 py-3 text-right">
-                    <PctPill v={stock.change_7d} />
-                  </td>
+                    <td className="hidden sm:table-cell px-4 py-3 text-right">
+                      <PctPill v={stock.change_7d} />
+                    </td>
 
-                  <td className="sm:hidden px-4 py-3 text-right">
-                    <PctPill v={mobileVal} />
-                  </td>
+                    <td className="sm:hidden px-4 py-3 text-right">
+                      <PctPill v={mobileVal} />
+                    </td>
 
-                  <td className="hidden md:table-cell px-4 py-3">
-                    <div className="flex justify-center">
-                      <Sparkline data={stock.sparkline} positive={trendPositive} />
-                    </div>
-                  </td>
+                    <td className="hidden md:table-cell px-4 py-3">
+                      <div className="flex justify-center">
+                        <Sparkline data={stock.sparkline} positive={trendPositive} />
+                      </div>
+                    </td>
 
-                  <td className="px-4 py-3 text-right font-data text-text-muted">
-                    {(stock.volume || 0).toLocaleString("en-NG")}
-                  </td>
-                  <td className="px-4 py-3 text-right font-data font-medium text-text-primary">
-                    {formatNaira(stock.marketCap || 0)}
-                  </td>
-                  <td className="px-4 py-3">
-                    <span className="inline-block px-2 py-0.5 rounded-full border border-border text-xs text-text-muted">
-                      {stock.sector || "—"}
-                    </span>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+                    <td className="hidden sm:table-cell px-4 py-3 text-right font-data text-text-muted whitespace-nowrap">
+                      {(stock.volume || 0).toLocaleString("en-NG")}
+                    </td>
+                    <td className="px-4 py-3 text-right font-data font-medium text-text-primary whitespace-nowrap">
+                      {formatNaira(stock.marketCap || 0)}
+                    </td>
+                    <td className="hidden lg:table-cell px-4 py-3">
+                      <span className="inline-block px-2 py-0.5 rounded-full border border-border text-xs text-text-muted whitespace-nowrap">
+                        {stock.sector || "—"}
+                      </span>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
       </div>
+
+      <p className="mt-2 text-xs text-text-muted sm:hidden">
+        Tip: scroll sideways to see more columns — Stock stays pinned.
+      </p>
     </>
   );
 }
