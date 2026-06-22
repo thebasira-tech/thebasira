@@ -1,3 +1,29 @@
+model Feedback {
+  id          Int      @id @default(autoincrement())
+  page        String
+  rating      Int
+  reason      String?
+  suggestion  String?
+  createdAt   DateTime @default(now())
+}
+
+model Subscriber {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  source    String?  // which page they signed up from
+  createdAt DateTime @default(now())
+}
+
+model ContactMessage {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String
+  subject   String?
+  message   String
+  createdAt DateTime @default(now())
+}
+
 enum Sentiment {
   BULLISH
   BEARISH

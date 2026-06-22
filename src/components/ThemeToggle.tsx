@@ -8,8 +8,6 @@ export default function ThemeToggle() {
   const { theme, toggleTheme } = useTheme();
   const [mounted, setMounted] = React.useState(false);
 
-  // Avoid a hydration mismatch on the icon: render a stable placeholder until
-  // mounted, since the real theme is only known on the client.
   React.useEffect(() => setMounted(true), []);
 
   return (

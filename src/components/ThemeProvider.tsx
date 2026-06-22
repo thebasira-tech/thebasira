@@ -21,12 +21,11 @@ function applyThemeClass(t: Theme) {
 }
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  // Default to dark; the inline script in layout has already set the correct
-  // class before paint. We sync React state to it on mount.
-  const [theme, setThemeState] = React.useState<Theme>("dark");
+  // Default to light now.
+  const [theme, setThemeState] = React.useState<Theme>("light");
 
   React.useEffect(() => {
-    let stored: Theme = "dark";
+    let stored: Theme = "light";
     try {
       const v = localStorage.getItem(STORAGE_KEY);
       if (v === "light" || v === "dark") stored = v;

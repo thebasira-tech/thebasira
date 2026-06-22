@@ -13,6 +13,7 @@ const NAV_LINKS = [
   { href: "/tools/purchasing-power", label: "Purchasing Power" },
   { href: "/tools/diaspora-bridge", label: "Diaspora Bridge" },
   { href: "/about", label: "About" },
+  { href: "/contact", label: "Contact" },
 ];
 
 export default function SiteHeader() {
@@ -21,7 +22,6 @@ export default function SiteHeader() {
   return (
     <header className="border-b border-border bg-background sticky top-0 z-40">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
-        {/* Brand */}
         <div className="flex items-center gap-3">
           <Link href="/" className="flex items-center gap-3" onClick={() => setMenuOpen(false)}>
             <NaijaStocksLogo size={30} />
@@ -31,7 +31,6 @@ export default function SiteHeader() {
           </Link>
         </div>
 
-        {/* Desktop nav */}
         <nav className="hidden lg:flex items-center gap-5 text-sm">
           {NAV_LINKS.map((link) => (
             <Link
@@ -45,7 +44,6 @@ export default function SiteHeader() {
         </nav>
 
         <div className="flex items-center gap-3">
-          {/* Status pill (mock for now) */}
           <div className="hidden sm:flex items-center gap-2">
             <span className="text-xs text-text-muted">Market</span>
             <span className="inline-flex items-center rounded-full border border-border px-3 py-1 text-xs font-medium text-text-primary whitespace-nowrap">
@@ -54,10 +52,8 @@ export default function SiteHeader() {
             </span>
           </div>
 
-          {/* Theme toggle */}
           <ThemeToggle />
 
-          {/* Mobile menu toggle */}
           <button
             type="button"
             onClick={() => setMenuOpen((v) => !v)}
@@ -70,7 +66,6 @@ export default function SiteHeader() {
         </div>
       </div>
 
-      {/* Mobile nav drawer */}
       {menuOpen && (
         <nav className="lg:hidden border-t border-border bg-background px-4 sm:px-6 py-3 flex flex-col gap-1">
           {NAV_LINKS.map((link) => (
@@ -94,7 +89,6 @@ export default function SiteHeader() {
         </nav>
       )}
 
-      {/* Accent line */}
       <div className="h-1 bg-accent" />
     </header>
   );

@@ -6,6 +6,7 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 import MarketTicker from "@/components/MarketTicker";
+import FeedbackWidget from "@/components/FeedbackWidget";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const spaceGrotesk = Space_Grotesk({ subsets: ["latin"], variable: "--font-space-grotesk" });
@@ -17,8 +18,8 @@ export const metadata: Metadata = {
 };
 
 // Runs before paint to set the theme class, preventing a flash of the wrong
-// theme on first load. Defaults to dark.
-const themeInitScript = `(function(){try{var t=localStorage.getItem('basira-theme');if(t==='light'){document.documentElement.classList.remove('dark');}else{document.documentElement.classList.add('dark');}}catch(e){document.documentElement.classList.add('dark');}})();`;
+// theme on first load. Defaults to LIGHT now (only applies dark when explicitly chosen).
+const themeInitScript = `(function(){try{var t=localStorage.getItem('basira-theme');if(t==='dark'){document.documentElement.classList.add('dark');}else{document.documentElement.classList.remove('dark');}}catch(e){document.documentElement.classList.remove('dark');}})();`;
 
 export default function RootLayout({
   children,
@@ -40,6 +41,7 @@ export default function RootLayout({
           <SiteHeader />
           <div className="min-h-[calc(100vh-72px)]">{children}</div>
           <SiteFooter />
+          <FeedbackWidget />
         </ThemeProvider>
         <Analytics />
       </body>
