@@ -4,6 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
 import NaijaStocksLogo from "@/components/NaijaStocksLogo";
+import ThemeToggle from "@/components/ThemeToggle";
 
 const NAV_LINKS = [
   { href: "/", label: "Stocks" },
@@ -52,6 +53,9 @@ export default function SiteHeader() {
               Open (simulated)
             </span>
           </div>
+
+          {/* Theme toggle */}
+          <ThemeToggle />
 
           {/* Mobile menu toggle */}
           <button

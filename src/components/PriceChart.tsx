@@ -12,6 +12,7 @@ import {
   type HistogramData,
 } from "lightweight-charts";
 import type { DailyBar } from "@/lib/history";
+import { useTheme } from "@/components/ThemeProvider";
 
 type Props = {
   data: DailyBar[];
@@ -22,15 +23,29 @@ function toLineSeriesData(data: DailyBar[]): LineData[] {
   return data.map((b) => ({ time: b.time, value: b.close }));
 }
 
-function toVolumeSeriesData(data: DailyBar[]): HistogramData[] {
+function toVolumeSeriesData(data: DailyBar[], upColor: string, downColor: string): HistogramData[] {
   return data.map((b) => ({
     time: b.time,
     value: b.volume,
-    color: b.close >= b.open ? "rgba(22, 199, 132, 0.35)" : "rgba(234, 57, 67, 0.35)",
+    color: b.close >= b.open ? `${upColor}59` : `${downColor}59`, // ~35% alpha
   }));
 }
 
+function readThemeColors() {
+  const cs = getComputedStyle(document.documentElement);
+  const v = (name: string, fallback: string) => cs.getPropertyValue(name).trim() || fallback;
+  return {
+    background: v("--surface", "#15191E"),
+    text: v("--text-muted", "#8B96A5"),
+    grid: v("--border", "#23282E"),
+    accent: v("--accent", "#00A878"),
+    up: v("--up", "#16C784"),
+    down: v("--down", "#EA3943"),
+  };
+}
+
 export default function PriceChart({ data, height = 360 }: Props) {
+  const { theme } = useTheme();
   const containerRef = React.useRef<HTMLDivElement | null>(null);
   const chartRef = React.useRef<IChartApi | null>(null);
 
@@ -47,51 +62,50 @@ export default function PriceChart({ data, height = 360 }: Props) {
     return { diff, pct };
   }, [last?.close, prev?.close]);
 
+  // Create (or recreate) the chart on mount and whenever the theme changes.
   React.useEffect(() => {
     if (!containerRef.current) return;
+
+    const colors = readThemeColors();
 
     const chart = createChart(containerRef.current, {
       height,
       layout: {
-        background: { type: ColorType.Solid, color: "#15191E" },
-        textColor: "#8B96A5",
+        background: { type: ColorType.Solid, color: colors.background },
+        textColor: colors.text,
       },
       grid: {
-        vertLines: { color: "#23282E" },
-        horzLines: { color: "#23282E" },
+        vertLines: { color: colors.grid },
+        horzLines: { color: colors.grid },
       },
-      rightPriceScale: { borderColor: "#23282E" },
-      timeScale: { borderColor: "#23282E" },
+      rightPriceScale: { borderColor: colors.grid },
+      timeScale: { borderColor: colors.grid },
       crosshair: {
-        vertLine: { color: "#3A4047" },
-        horzLine: { color: "#3A4047" },
+        vertLine: { color: colors.text },
+        horzLine: { color: colors.text },
       },
     });
 
-    // ✅ Price line (top area)
     const line = chart.addSeries(LineSeries, {
-      color: "#00A878",
+      color: colors.accent,
       lineWidth: 2,
     });
 
-    // ✅ Volume bars (bottom area)
     const volume = chart.addSeries(HistogramSeries, {
       priceFormat: { type: "volume" },
-      priceScaleId: "", // separate (hidden) scale
+      priceScaleId: "",
     });
 
-    // Put volume bars at the bottom quarter-ish of chart
     volume.priceScale().applyOptions({
       scaleMargins: { top: 0.75, bottom: 0 },
     });
 
-    // Give the price series more room above volume
     line.priceScale().applyOptions({
-      scaleMargins: { top: 0.10, bottom: 0.25 },
+      scaleMargins: { top: 0.1, bottom: 0.25 },
     });
 
     line.setData(toLineSeriesData(data));
-    volume.setData(toVolumeSeriesData(data));
+    volume.setData(toVolumeSeriesData(data, colors.up, colors.down));
 
     chart.timeScale().fitContent();
     chart.applyOptions({ width: containerRef.current.clientWidth });
@@ -114,14 +128,16 @@ export default function PriceChart({ data, height = 360 }: Props) {
       lineRef.current = null;
       volRef.current = null;
     };
-  }, []); // mount once
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [theme, height]);
 
-  // Update data on timeframe changes
+  // Update data on timeframe changes (without rebuilding the whole chart).
   React.useEffect(() => {
     if (!lineRef.current || !volRef.current || !chartRef.current) return;
 
+    const colors = readThemeColors();
     lineRef.current.setData(toLineSeriesData(data));
-    volRef.current.setData(toVolumeSeriesData(data));
+    volRef.current.setData(toVolumeSeriesData(data, colors.up, colors.down));
     chartRef.current.timeScale().fitContent();
   }, [data]);
 
@@ -137,9 +153,7 @@ export default function PriceChart({ data, height = 360 }: Props) {
 
         {change && (
           <div
-            className={`text-xs font-data font-medium ${
-              isUp ? "text-up" : "text-down"
-            }`}
+            className={`text-xs font-data font-medium ${isUp ? "text-up" : "text-down"}`}
             title="Change vs previous close"
           >
             {isUp ? "▲" : "▼"} {isUp ? "+" : ""}

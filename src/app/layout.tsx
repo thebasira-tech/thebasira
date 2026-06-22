@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Space_Grotesk, JetBrains_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
+import { ThemeProvider } from "@/components/ThemeProvider";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 import MarketTicker from "@/components/MarketTicker";
@@ -15,6 +16,10 @@ export const metadata: Metadata = {
   description: "Nigerian market data, charts and analytics — simplified.",
 };
 
+// Runs before paint to set the theme class, preventing a flash of the wrong
+// theme on first load. Defaults to dark.
+const themeInitScript = `(function(){try{var t=localStorage.getItem('basira-theme');if(t==='light'){document.documentElement.classList.remove('dark');}else{document.documentElement.classList.add('dark');}}catch(e){document.documentElement.classList.add('dark');}})();`;
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -23,13 +28,19 @@ export default function RootLayout({
   return (
     <html
       lang="en"
+      suppressHydrationWarning
       className={`${inter.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable}`}
     >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+      </head>
       <body className="bg-background text-text-primary antialiased">
-        <MarketTicker />
-        <SiteHeader />
-        <div className="min-h-[calc(100vh-72px)]">{children}</div>
-        <SiteFooter />
+        <ThemeProvider>
+          <MarketTicker />
+          <SiteHeader />
+          <div className="min-h-[calc(100vh-72px)]">{children}</div>
+          <SiteFooter />
+        </ThemeProvider>
         <Analytics />
       </body>
     </html>
